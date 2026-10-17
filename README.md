@@ -53,6 +53,24 @@ new markings together, so dates accumulate on the stamp and a later rehearsal
 supersedes an earlier note on the same topic instead of drawing over it. A PDF
 stamped by something else gets its stamp dates read, whited out and merged.
 
+## Sharing a rehearsal
+
+**Share** on a results page copies that rehearsal's results and annotated PDFs
+into a private Vercel Blob store (`harmonia-ai-lab-shares`) under a random
+24-character token, and gives you `https://harmonia-ai-lab.vercel.app/s/<token>`.
+Anyone with the link sees the same results screen, read-only, with no
+password. **Stop sharing** (the crossed-out link icon) deletes the copy, and the
+link 404s right away.
+
+- The Vercel project serves share links only (`LAB_HOSTED=1`). Uploads and
+  processing still happen on this Mac, so a shared link keeps working when the
+  Mac is off.
+- The blobs are private: the PDFs have no public URL of their own, and only
+  `/s/<token>` can read them.
+- Pushing to `main` deploys the hosted copy.
+- `BLOB_READ_WRITE_TOKEN` in `.env.local` came from `vercel env pull`.
+  `LAB_SHARE_ORIGIN` overrides the link's domain.
+
 ## Where to experiment
 
 - `pipeline/extract_prompt.md` is the per-song notes prompt.
