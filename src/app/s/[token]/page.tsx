@@ -4,6 +4,7 @@ import { Page } from "@/components/header";
 import { ResultsView } from "@/components/results-view";
 import { fmtDate } from "@/lib/format";
 import { getShared } from "@/lib/share";
+import { VisitBeacon } from "./visit-beacon";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +26,7 @@ export default async function SharedPage({ params }: Props) {
   return (
     <Page wide nav={false}>
       <ResultsView meta={shared.meta} result={shared.result} fileUrl={(_rel, i) => `/s/${token}/file/${i}`} />
+      <VisitBeacon token={token} />
     </Page>
   );
 }

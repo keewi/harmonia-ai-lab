@@ -9,7 +9,7 @@ import { AUTH_COOKIE, sessionToken } from "@/lib/auth";
  */
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  if (pathname.startsWith("/s/")) return NextResponse.next();
+  if (pathname.startsWith("/s/") || pathname === "/api/hit") return NextResponse.next();
   if (process.env.LAB_HOSTED === "1") return new NextResponse("Not found", { status: 404 });
   if (pathname === "/login") return NextResponse.next();
   const token = await sessionToken();

@@ -37,7 +37,7 @@ export function ScorePanel({ scores }: { scores: ScoreTab[] }) {
         ) : (
           <h2 className="text-lg font-semibold text-ink">{s.title}</h2>
         )}
-        <a href={`${s.url}?download=1`} className={btn.secondary} download>
+        <a href={`${s.url}?download=1`} className={btn.secondary} download data-score={s.title}>
           <Download size={16} aria-hidden /> Download PDF
         </a>
       </div>

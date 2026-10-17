@@ -61,7 +61,7 @@ export function ResultsView({
               <ul className="divide-y divide-border-subtle">
                 {result.songs.map((s) => (
                   <li key={s.title}>
-                    <details className="group">
+                    <details className="group" data-song={s.title}>
                       <summary className="flex cursor-pointer list-none items-start gap-3 px-5 py-3.5 hover:bg-grey-50 [&::-webkit-details-marker]:hidden">
                         <div className="min-w-0 flex-1">
                           <p className="font-semibold text-ink">{s.title}</p>
