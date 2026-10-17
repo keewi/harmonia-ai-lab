@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { ExternalLink, Upload } from "lucide-react";
 import { Page } from "@/components/header";
 import { btn, card, eyebrow } from "@/components/ui";
-import { getRun, type Marking } from "@/lib/runs";
+import { getRun, type Marking, type RunResult } from "@/lib/runs";
 import { clock, fmtDate, videoAt } from "@/lib/format";
 import { ScorePanel } from "./score-panel";
 
@@ -43,9 +43,45 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
+        <div className="min-w-0 space-y-6">
+          <section className={card} aria-label="Songs rehearsed">
+            <div className="flex items-baseline justify-between px-5 pb-2 pt-5">
+              <h2 className={eyebrow}>Songs rehearsed</h2>
+              <span className="text-sm text-grey-500">
+                {totalNotes} note{totalNotes === 1 ? "" : "s"} in all
+              </span>
+            </div>
+            {result.songs.length === 0 ? (
+              <p className="px-5 pb-5 text-[15px] text-grey-700">We couldn&apos;t tell which songs were rehearsed.</p>
+            ) : (
+              <ul className="divide-y divide-border-subtle">
+                {result.songs.map((s) => (
+                  <li key={s.title}>
+                    <details className="group">
+                      <summary className="flex cursor-pointer list-none items-start gap-3 px-5 py-3.5 hover:bg-grey-50 [&::-webkit-details-marker]:hidden">
+                        <div className="min-w-0 flex-1">
+                          <p className="font-semibold text-ink">{s.title}</p>
+                          {s.worked_on ? <p className="mt-0.5 text-sm text-grey-700">{s.worked_on}</p> : null}
+                          <p className="mt-1 text-[13px] text-grey-500">
+                            {[s.start_s != null ? `From ${clock(s.start_s)}` : null, breakdown(s)].filter(Boolean).join(" · ")}
+                          </p>
+                        </div>
+                        <span className="shrink-0 rounded-pill bg-blush px-2.5 py-1 text-[13px] font-semibold text-red-700">
+                          {s.notes} note{s.notes === 1 ? "" : "s"}
+                        </span>
+                      </summary>
+                      <Notes markings={s.markings} video={meta.video_url} />
+                    </details>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
         <section aria-label="Annotated sheet music" className="min-w-0">
           <ScorePanel scores={result.scores.map((s) => ({ title: s.title, url: fileUrl(s.file), dates: s.dates, heard: s.heard }))} />
         </section>
+        </div>
 
         <aside className="min-w-0 space-y-6">
           <section className={`${card} p-5`}>
@@ -78,40 +114,6 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
             <p className="mt-3 whitespace-pre-line text-[15px] leading-relaxed text-grey-900">{result.summary || "No summary came back."}</p>
           </section>
 
-          <section className={card}>
-            <div className="flex items-baseline justify-between px-5 pb-2 pt-5">
-              <h2 className={eyebrow}>Songs rehearsed</h2>
-              <span className="text-sm text-grey-500">
-                {totalNotes} note{totalNotes === 1 ? "" : "s"} in all
-              </span>
-            </div>
-            {result.songs.length === 0 ? (
-              <p className="px-5 pb-5 text-[15px] text-grey-700">We couldn&apos;t tell which songs were rehearsed.</p>
-            ) : (
-              <ul className="divide-y divide-border-subtle">
-                {result.songs.map((s) => (
-                  <li key={s.title}>
-                    <details className="group">
-                      <summary className="flex cursor-pointer list-none items-start gap-3 px-5 py-3.5 hover:bg-grey-50 [&::-webkit-details-marker]:hidden">
-                        <div className="min-w-0 flex-1">
-                          <p className="font-semibold text-ink">{s.title}</p>
-                          {s.worked_on ? <p className="mt-0.5 text-sm text-grey-700">{s.worked_on}</p> : null}
-                          <p className="mt-1 text-[13px] text-grey-500">
-                            {s.start_s != null ? `From ${clock(s.start_s)}` : null}
-                            {!s.has_score ? `${s.start_s != null ? " · " : ""}No sheet music uploaded` : null}
-                          </p>
-                        </div>
-                        <span className="shrink-0 rounded-pill bg-blush px-2.5 py-1 text-[13px] font-semibold text-red-700">
-                          {s.notes} note{s.notes === 1 ? "" : "s"}
-                        </span>
-                      </summary>
-                      <Notes markings={s.markings} video={meta.video_url} />
-                    </details>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
 
           <p className="text-[13px] text-grey-500">
             Made by {result.model} in {Math.max(1, Math.round(result.seconds / 60))} min from {result.transcript_source}. The AI&apos;s notes
@@ -121,6 +123,17 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
       </div>
     </Page>
   );
+}
+
+/** Where this song's notes ended up in the PDF: at their bar, or in the summary pages at the back. */
+function breakdown(s: RunResult["songs"][number]) {
+  if (!s.has_score) return "No sheet music uploaded, so these are listed here only";
+  if (!s.notes) return null;
+  const inMusic = s.placed ?? s.markings.filter((m) => m.measure != null).length;
+  const atBack = s.notes - inMusic;
+  if (!atBack) return "All marked in the music";
+  if (!inMusic) return "All in the summary at the back of the PDF";
+  return `${inMusic} marked in the music, ${atBack} in the summary at the back`;
 }
 
 function Notes({ markings, video }: { markings: Marking[]; video: string }) {

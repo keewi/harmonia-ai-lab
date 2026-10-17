@@ -451,6 +451,17 @@ def stamp(pdf_in, pdf_out, dates, white_out=None):
         writer.write(f)
 
 
+def score_measures(path):
+    """Every measure number the renderer can find on this score."""
+    with pdfplumber.open(path) as pdf:
+        found = set()
+        for pg in pdf.pages:
+            g = annotate.page_geom(pg)
+            if g:
+                found |= set(g["mn"])
+    return found
+
+
 def annotate_score(run, score, new_markings):
     date = run.meta["date"]
     # Re-processing a date replaces that date's markings instead of doubling them.
@@ -466,6 +477,11 @@ def annotate_score(run, score, new_markings):
     if everything:
         active, dead = annotate.resolve(for_renderer(everything))
         annotate.detect_measure_pt(score["clean"])
+        # A note only lands in the music when its bar is printed on the score; the
+        # rest go to the summary pages at the back. Record which, for the results page.
+        bars = score_measures(score["clean"])
+        for m in new_markings:
+            m["placed"] = m["measure"] is not None and m["measure"] in bars
         annotate.build({"song": score["title"]}, active, dead, score["clean"], drawn)
     else:
         shutil.copy(score["clean"], drawn)
@@ -537,11 +553,12 @@ def main(directory):
         out_songs.append({
             "title": s["title"], "worked_on": s.get("worked_on"),
             "notes": len(notes),
+            "placed": sum(1 for m in notes if m.get("placed")),
             "start_s": min((w.get("start_s", 0) for w in s.get("sections") or []), default=None),
             "has_score": bool(sc),
             "annotated": annotated[sc["key"]]["file"] if sc else None,
             "markings": [{k: m.get(k) for k in ("measure", "measure_end", "tier", "status",
-                                                 "kind", "parts", "tag", "text", "at_s")}
+                                                 "kind", "parts", "tag", "text", "at_s", "placed")}
                          for m in notes],
         })
     heard = {s["score"]["key"] for s in songs if s["score"]}

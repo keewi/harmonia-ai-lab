@@ -40,6 +40,8 @@ export type Marking = {
   tag: string | null;
   text: string;
   at_s: number | null;
+  /** Drawn at its bar in the PDF; false means it is in the summary pages at the back. */
+  placed?: boolean;
 };
 
 export type RunResult = {
@@ -51,6 +53,8 @@ export type RunResult = {
     title: string;
     worked_on?: string;
     notes: number;
+    /** How many of `notes` were drawn at their bar. Missing on runs from before it was recorded. */
+    placed?: number;
     start_s: number | null;
     has_score: boolean;
     annotated: string | null;
