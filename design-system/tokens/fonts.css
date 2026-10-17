@@ -1,0 +1,4 @@
+/* Brand fonts are Tan Buster (display) and Garet (body) — both commercial, not supplied.
+   Substitutes: Bowlby One (display) and Outfit (body), self-hosted from Google Fonts. */
+@font-face{font-family:"Bowlby One";font-style:normal;font-weight:400;font-display:swap;src:url("../assets/fonts/BowlbyOne-Regular.woff2") format("woff2")}
+@font-face{font-family:"Outfit";font-style:normal;font-weight:300 800;font-display:swap;src:url("../assets/fonts/Outfit-Variable.woff2") format("woff2")}

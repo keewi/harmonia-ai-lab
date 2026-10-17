@@ -1,0 +1,20 @@
+:root{
+--font-display:"Bowlby One","Tan Buster","Impact",sans-serif;
+--font-body:"Outfit","Garet","Avenir Next","Helvetica Neue",sans-serif;
+--font-mono:ui-monospace,"SF Mono",Menlo,monospace;
+/* Display (headlines, always uppercase) */
+--text-display-xl:64px;--leading-display-xl:0.92;
+--text-display-lg:48px;--leading-display-lg:0.95;
+--text-display-md:32px;--leading-display-md:1;
+--text-display-sm:24px;--leading-display-sm:1.05;
+--tracking-display:0.01em;
+/* Body (Outfit) */
+--text-title:20px;--leading-title:1.25;
+--text-body-lg:18px;--leading-body-lg:1.5;
+--text-body:16px;--leading-body:1.5;
+--text-body-sm:14px;--leading-body-sm:1.45;
+--text-caption:12px;--leading-caption:1.4;
+/* Eyebrow: uppercase tracked Outfit, like "GOLDEN GATE" in the lockup */
+--text-eyebrow:12px;--tracking-eyebrow:0.14em;
+--weight-regular:400;--weight-medium:500;--weight-semibold:600;--weight-bold:700;
+}

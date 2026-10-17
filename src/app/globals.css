@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+/* Harmonia design tokens, copied from harmonia-connect/design-system/tokens. */
+@import "../../design-system/tokens/colors.css";
+@import "../../design-system/tokens/typography.css";
+@import "../../design-system/tokens/spacing.css";
+@import "../../design-system/tokens/effects.css";
+
+@font-face{font-family:"Bowlby One";font-style:normal;font-weight:400;font-display:swap;src:url("/fonts/BowlbyOne-Regular.woff2") format("woff2")}
+@font-face{font-family:"Outfit";font-style:normal;font-weight:300 800;font-display:swap;src:url("/fonts/Outfit-Variable.woff2") format("woff2")}
+
+@theme inline {
+  --font-display: var(--font-display);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-mono);
+
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-ink: var(--ink);
+  --color-white: var(--white);
+  --color-blush: var(--red-100);
+  --color-red-50: var(--red-50);
+  --color-red-700: var(--red-700);
+  --color-grey-50: var(--grey-50);
+  --color-grey-100: var(--grey-100);
+  --color-grey-200: var(--grey-200);
+  --color-grey-300: var(--grey-300);
+  --color-grey-500: var(--grey-500);
+  --color-grey-700: var(--grey-700);
+  --color-grey-900: var(--grey-900);
+  --color-gold-400: var(--gold-400);
+  --color-green-100: var(--green-100);
+  --color-green-500: var(--green-500);
+  --color-amber-100: var(--amber-100);
+  --color-amber-500: var(--amber-500);
+  --color-blue-100: var(--blue-100);
+  --color-blue-500: var(--blue-500);
+  --color-border-default: var(--border-default);
+  --color-border-subtle: var(--border-subtle);
+
+  --radius-control: var(--radius-sm);
+  --radius-card: var(--radius-lg);
+  --radius-pill: var(--radius-pill);
+}
+
+@layer base {
+  body {
+    background: var(--surface-page);
+    color: var(--text-body);
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--text-link); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { color: var(--text-link-hover); }
+  :focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: var(--focus-ring-offset); }
+}
+
+@keyframes lab-rise { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }

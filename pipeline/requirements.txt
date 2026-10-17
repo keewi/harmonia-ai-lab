@@ -1,0 +1,12 @@
+# Rehearsal Companion pipeline (runs locally, not on Vercel).
+#   python3 -m venv .venv && ./.venv/bin/pip install -r scripts/companion/requirements.txt
+yt-dlp>=2024.1.0
+pdfplumber>=0.11
+reportlab>=4.0
+pypdf>=4.0
+
+# Whisper, for when YouTube has no captions. Apple-Silicon only by design:
+# the captions job already runs on the self-hosted Mac because YouTube blocks
+# datacentre IPs, and the marker keeps pip from trying on the Linux runner,
+# which never transcribes anything.
+mlx-whisper>=0.4; sys_platform == "darwin" and platform_machine == "arm64"
