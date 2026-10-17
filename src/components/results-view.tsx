@@ -41,7 +41,7 @@ export function ResultsView({
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className={eyebrow}>Rehearsal notes</p>
-          <h1 className="mt-1 font-display text-3xl uppercase leading-tight text-ink md:text-4xl">{fmtDate(meta.date)}</h1>
+          <h1 className="mt-1 font-display text-2xl uppercase leading-tight text-ink sm:text-3xl md:text-4xl">{fmtDate(meta.date)}</h1>
         </div>
         {actions ? <div className="flex flex-wrap items-start gap-3">{actions}</div> : null}
       </div>

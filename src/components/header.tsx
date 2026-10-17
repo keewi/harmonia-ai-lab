@@ -32,7 +32,7 @@ export function Header({ nav = true }: { nav?: boolean }) {
           </Link>
         </nav>
         ) : (
-          <span className="text-sm text-grey-500">Shared rehearsal notes</span>
+          <span className="hidden text-sm text-grey-500 sm:inline">Shared rehearsal notes</span>
         )}
       </div>
     </header>
