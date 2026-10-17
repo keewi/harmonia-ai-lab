@@ -63,12 +63,10 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
                           <p className="font-semibold text-ink">{s.title}</p>
                           {s.worked_on ? <p className="mt-0.5 text-sm text-grey-700">{s.worked_on}</p> : null}
                           <p className="mt-1 text-[13px] text-grey-500">
-                            {[s.start_s != null ? `From ${clock(s.start_s)}` : null, breakdown(s)].filter(Boolean).join(" · ")}
+                            {[s.start_s != null ? `From ${clock(s.start_s)}` : null, s.has_score ? null : "No sheet music uploaded"].filter(Boolean).join(" · ")}
                           </p>
                         </div>
-                        <span className="shrink-0 rounded-pill bg-blush px-2.5 py-1 text-[13px] font-semibold text-red-700">
-                          {s.notes} note{s.notes === 1 ? "" : "s"}
-                        </span>
+                        <NoteCount song={s} />
                       </summary>
                       <Notes markings={s.markings} video={meta.video_url} />
                     </details>
@@ -125,15 +123,26 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
   );
 }
 
-/** Where this song's notes ended up in the PDF: at their bar, or in the summary pages at the back. */
-function breakdown(s: RunResult["songs"][number]) {
-  if (!s.has_score) return "No sheet music uploaded, so these are listed here only";
-  if (!s.notes) return null;
+/** The song's note count, and under it where those notes ended up in the PDF. */
+function NoteCount({ song: s }: { song: RunResult["songs"][number] }) {
   const inMusic = s.placed ?? s.markings.filter((m) => m.measure != null).length;
   const atBack = s.notes - inMusic;
-  if (!atBack) return "All marked in the music";
-  if (!inMusic) return "All in the summary at the back of the PDF";
-  return `${inMusic} marked in the music, ${atBack} in the summary at the back`;
+  return (
+    <div className="flex shrink-0 flex-col items-end gap-1 text-right">
+      <span className="rounded-pill bg-blush px-2.5 py-1 text-[13px] font-semibold text-red-700">
+        {s.notes} note{s.notes === 1 ? "" : "s"}
+      </span>
+      {s.notes > 0 && s.has_score ? (
+        <span className="text-[12px] leading-snug text-grey-700">
+          {inMusic} in the music
+          <br />
+          {atBack} in the summary
+        </span>
+      ) : s.notes > 0 ? (
+        <span className="text-[12px] leading-snug text-grey-700">Listed here only</span>
+      ) : null}
+    </div>
+  );
 }
 
 function Notes({ markings, video }: { markings: Marking[]; video: string }) {
