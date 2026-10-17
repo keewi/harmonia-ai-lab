@@ -10,7 +10,7 @@ import path from "node:path";
  * wrote (run.json, inputs/), what the pipeline reports while it works
  * (status.json, pipeline.log) and what it made (result.json, out/).
  */
-export const DATA_DIR = path.join(process.cwd(), "data", "runs");
+export const DATA_DIR = path.join(/* turbopackIgnore: true */ process.cwd(), "data", "runs");
 
 export type RunMeta = {
   id: string;
@@ -65,7 +65,7 @@ export type RunResult = {
   seconds: number;
 };
 
-export type Run = { meta: RunMeta; status: RunStatus; result: RunResult | null };
+export type Run = { meta: RunMeta; status: RunStatus; result: RunResult | null; share: { token: string; shared_at: string } | null };
 
 const ID = /^[a-z0-9-]{6,40}$/;
 
@@ -108,7 +108,8 @@ export async function getRun(id: string): Promise<Run | null> {
     status.error = "The pipeline stopped reporting. It may have been interrupted. Try uploading again.";
   }
   const result = status.status === "done" ? await readJson<RunResult>(path.join(dir, "result.json")) : null;
-  return { meta, status, result };
+  const share = await readJson<{ token: string; shared_at: string }>(path.join(dir, "share.json"));
+  return { meta, status, result, share };
 }
 
 export async function listRuns(): Promise<Run[]> {
@@ -138,7 +139,7 @@ export async function createRun(input: Omit<RunMeta, "id" | "created_at" | "scor
 
 function pythonBin() {
   if (process.env.LAB_PYTHON) return process.env.LAB_PYTHON;
-  const local = path.join(process.cwd(), ".venv", "bin", "python");
+  const local = path.join(/* turbopackIgnore: true */ process.cwd(), ".venv", "bin", "python");
   return existsSync(local) ? local : "python3";
 }
 
@@ -146,7 +147,7 @@ function pythonBin() {
 export function startPipeline(id: string) {
   const dir = runDir(id);
   const log = openSync(path.join(dir, "pipeline.log"), "a");
-  const child = spawn(pythonBin(), ["-W", "ignore", path.join(process.cwd(), "pipeline", "run.py"), dir], {
+  const child = spawn(pythonBin(), ["-W", "ignore", path.join(/* turbopackIgnore: true */ process.cwd(), "pipeline", "run.py"), dir], {
     cwd: process.cwd(),
     env: process.env,
     detached: true,

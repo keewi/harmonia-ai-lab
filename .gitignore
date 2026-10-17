@@ -9,3 +9,4 @@ next-env.d.ts
 __pycache__/
 # Uploaded scores are licensed music and runs hold rehearsal transcripts: never commit.
 /data/
+.vercel
