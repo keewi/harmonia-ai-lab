@@ -12,7 +12,7 @@ type Props = { params: Promise<{ token: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const shared = await getShared((await params).token);
   return {
-    title: shared ? `Rehearsal notes, ${fmtDate(shared.meta.date, "short")}` : "Harmonia AI Lab",
+    title: shared ? `Rehearsal notes, ${fmtDate(shared.meta.date, "short")}` : "Harmonia Notes",
     robots: { index: false, follow: false },
   };
 }

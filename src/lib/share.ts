@@ -21,7 +21,7 @@ export type Shared = {
 };
 
 export function shareOrigin() {
-  return (process.env.LAB_SHARE_ORIGIN || "https://harmonia-ai-lab.vercel.app").replace(/\/$/, "");
+  return (process.env.LAB_SHARE_ORIGIN || "https://golden-gate-harmonia.vercel.app").replace(/\/$/, "");
 }
 
 export function shareUrl(token: string) {

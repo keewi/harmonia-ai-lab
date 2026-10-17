@@ -1,4 +1,4 @@
-# Harmonia AI Lab
+# Harmonia Notes
 
 A sandbox for the AI half of Harmonia Connect: upload sheet music and a
 rehearsal's YouTube link, and get back the director's notes written onto the
@@ -57,7 +57,7 @@ stamped by something else gets its stamp dates read, whited out and merged.
 
 **Share** on a results page copies that rehearsal's results and annotated PDFs
 into a private Vercel Blob store (`harmonia-ai-lab-shares`) under a random
-24-character token, and gives you `https://harmonia-ai-lab.vercel.app/s/<token>`.
+24-character token, and gives you `https://golden-gate-harmonia.vercel.app/s/<token>`.
 Anyone with the link sees the same results screen, read-only, with no
 password. **Stop sharing** (the crossed-out link icon) deletes the copy, and the
 link 404s right away.
@@ -67,7 +67,8 @@ link 404s right away.
   Mac is off.
 - The blobs are private: the PDFs have no public URL of their own, and only
   `/s/<token>` can read them.
-- Pushing to `main` deploys the hosted copy.
+- Pushing to `main` deploys the hosted copy (Vercel project
+  `golden-gate-harmonia`). The old `harmonia-ai-lab.vercel.app` redirects there.
 - `BLOB_READ_WRITE_TOKEN` in `.env.local` came from `vercel env pull`.
   `LAB_SHARE_ORIGIN` overrides the link's domain.
 

@@ -112,12 +112,12 @@ export function ResultsView({
           </section>
 
           <section className={`${card} p-5`}>
-            <h2 className={eyebrow}>AI summary</h2>
+            <h2 className={eyebrow}>Summary</h2>
             <p className="mt-3 whitespace-pre-line text-[15px] leading-relaxed text-grey-900">{result.summary || "No summary came back."}</p>
           </section>
           <p className="text-[13px] text-grey-500">
-            Made by {result.model} in {Math.max(1, Math.round(result.seconds / 60))} min from {result.transcript_source}. The AI&apos;s notes
-            go straight onto the score here with no review, so check them against the video.
+            Written automatically from the video in {Math.max(1, Math.round(result.seconds / 60))} min, with no one checking it first, so
+            check anything surprising against the video.
           </p>
         </aside>
       </div>

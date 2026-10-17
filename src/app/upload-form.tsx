@@ -110,7 +110,7 @@ export function UploadForm({ today, carried }: { today: string; carried: Carried
         >
           <Upload size={22} className="mb-2 text-grey-700" aria-hidden />
           <p className="text-[15px] font-medium text-ink">Drop PDFs here or click to choose</p>
-          <p className="text-sm text-grey-500">An annotated PDF from this lab keeps its earlier notes</p>
+          <p className="text-sm text-grey-500">An annotated PDF from Harmonia Notes keeps its earlier notes</p>
           <input ref={input} type="file" accept="application/pdf,.pdf" multiple className="sr-only" onChange={(e) => addFiles(e.target.files)} />
         </div>
       </section>

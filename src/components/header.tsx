@@ -11,14 +11,14 @@ export function Header({ nav = true }: { nav?: boolean }) {
           <Link href="/" className="flex items-center gap-3 no-underline">
           <Image src="/brand/harmonia-h-mark-red.png" alt="" width={26} height={32} className="h-8 w-auto" priority />
           <span className="font-display text-lg uppercase leading-none text-ink">
-            Harmonia <span className="text-brand">AI Lab</span>
+            Harmonia <span className="text-brand">Notes</span>
           </span>
           </Link>
         ) : (
           <div className="flex items-center gap-3">
           <Image src="/brand/harmonia-h-mark-red.png" alt="" width={26} height={32} className="h-8 w-auto" priority />
           <span className="font-display text-lg uppercase leading-none text-ink">
-            Harmonia <span className="text-brand">AI Lab</span>
+            Harmonia <span className="text-brand">Notes</span>
           </span>
           </div>
         )}

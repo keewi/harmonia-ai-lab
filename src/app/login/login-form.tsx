@@ -32,7 +32,7 @@ export function LoginForm({ next }: { next: string }) {
         ) : null}
       </div>
       <button type="submit" disabled={pending} className={`${btn.primary} w-full`}>
-        {pending ? "Checking…" : "Enter the lab"} <ArrowRight size={16} aria-hidden />
+        {pending ? "Checking…" : "Sign in"} <ArrowRight size={16} aria-hidden />
       </button>
     </form>
   );

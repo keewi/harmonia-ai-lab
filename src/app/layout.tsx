@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Harmonia AI Lab",
+  title: "Harmonia Notes",
   description: "Rehearsal video in, annotated sheet music out.",
   robots: { index: false, follow: false },
 };

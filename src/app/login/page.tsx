@@ -14,13 +14,13 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             Notes out.
           </h1>
           <p className="mt-4 max-w-sm text-white/85">
-            Our lab for seeing what AI can do with a rehearsal video and a stack of sheet music.
+            Every rehearsal&apos;s director notes, written onto our sheet music.
           </p>
         </div>
       </section>
       <section className="flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-[360px]">
-          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-grey-500">Harmonia AI Lab</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-grey-500">Harmonia Notes</p>
           <h2 className="mb-6 mt-1 font-display text-2xl uppercase text-ink">Sign in</h2>
           <LoginForm next={next ?? ""} />
         </div>

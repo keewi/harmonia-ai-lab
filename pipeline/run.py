@@ -99,7 +99,7 @@ def load_env():
 def ask_claude(system, user, max_tokens=MAX_REPLY_TOKENS):
     key = os.environ.get("ANTHROPIC_API_KEY")
     if not key or key.startswith("sk-ant-your"):
-        raise RuntimeError("ANTHROPIC_API_KEY is not set in .env.local, so the AI steps cannot run.")
+        raise RuntimeError("ANTHROPIC_API_KEY is not set in .env.local, so the notes cannot be written.")
     body = {"model": MODEL, "max_tokens": max_tokens, "system": system,
             "messages": [{"role": "user", "content": user}]}
     last = None
@@ -492,7 +492,7 @@ def annotate_score(run, score, new_markings):
 
     writer = PdfWriter(clone_from=drawn)
     writer.add_metadata({"/Title": f"{score['title']} (annotated)",
-                         "/Producer": "Harmonia AI Lab"})
+                         "/Producer": "Harmonia Notes"})
     writer.add_attachment(LAB_FILE, json.dumps({
         "version": 1, "song": score["title"], "dates": dates, "markings": everything,
     }).encode())
