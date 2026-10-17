@@ -222,7 +222,21 @@ def summary_page(meta, active, dead, general, W, H):
     c.setFillColorRGB(.42, .42, .42); c.setFont("Helvetica", 8.4)
     c.drawString(L, y, "Director markings, cumulative. Rehearsals "
                  + ", ".join(d for d in dates)
-                 + ".  Later rehearsals override earlier ones."); y -= 20
+                 + ".  Later rehearsals override earlier ones."); y -= 14
+    # The count a singer wants first: how much is already on the pages they
+    # just sang from, and how much exists only here.
+    total, here_only = len(active), len(general)
+    in_music = total - here_only
+    count = f"{total} note{'' if total == 1 else 's'}"
+    if not here_only:
+        count += ", all marked in the music above."
+    elif not in_music:
+        count += ", none tied to a printed bar, so they are all listed here only."
+    else:
+        count += (f": {in_music} marked in the music above, "
+                  f"{here_only} listed here only.")
+    c.setFillColorRGB(.08, .08, .08); c.setFont("Helvetica-Bold", 9)
+    c.drawString(L, y, count); y -= 20
 
     def rule(t):
         nonlocal y
