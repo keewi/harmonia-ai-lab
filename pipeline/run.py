@@ -23,12 +23,14 @@ old and new markings together. Nothing is drawn on top of earlier ink, and a
 later rehearsal supersedes an earlier one on the same topic.
 """
 import concurrent.futures
+import contextlib
 import io
 import json
 import os
 import re
 import shutil
 import sys
+import threading
 import time
 import traceback
 import urllib.error
@@ -251,11 +253,51 @@ def get_transcript(run):
                                + str(exc)[:600]) from None
         run.status("transcript", 15, "No captions on this video, so transcribing the audio")
         import transcribe
-        title, source, segments = transcribe.fetch(url)
+        with whisper_heartbeat(run):
+            title, source, segments = transcribe.fetch(url)
     if not segments:
         raise RuntimeError("That video has no speech to read.")
     json.dump({"title": title, "source": source, "segments": segments}, open(cached, "w"))
     return title, source, segments
+
+
+@contextlib.contextmanager
+def whisper_heartbeat(run, every=15):
+    """Keep status.json moving while Whisper works, which takes minutes, not seconds.
+
+    Without it the processing page sat at 15% with the same line for the whole
+    transcription, which looked stuck, and a long enough recording would trip
+    the app's twenty-minutes-without-a-report check. Whisper prints its own
+    progress bar into pipeline.log ("54%|█████..."), so read the latest figure
+    back from there.
+    """
+    stop = threading.Event()
+    log = run.path("pipeline.log")
+
+    def beat():
+        started = time.time()
+        while not stop.wait(every):
+            pct = None
+            try:
+                with open(log, "rb") as f:
+                    f.seek(max(0, os.path.getsize(log) - 4000))
+                    found = re.findall(rb"(\d{1,3})%\|", f.read())
+                    pct = int(found[-1]) if found else None
+            except OSError:
+                pass
+            mins = int((time.time() - started) // 60)
+            if pct is None:
+                run.status("transcript", 15, f"Downloading the audio to transcribe ({mins} min so far)")
+            else:
+                run.status("transcript", 15 + int(pct * 0.14), f"Transcribing the audio ({pct}%)")
+
+    thread = threading.Thread(target=beat, daemon=True)
+    thread.start()
+    try:
+        yield
+    finally:
+        stop.set()
+        thread.join(timeout=2)
 
 
 def condensed(segments, every=12):
