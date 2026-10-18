@@ -5,14 +5,37 @@ import { Page } from "@/components/header";
 import { ResultsView } from "@/components/results-view";
 import { btn } from "@/components/ui";
 import { getRun } from "@/lib/runs";
+import { getLibraryRun, libraryState, syncLibrary } from "@/lib/library";
+import { isHosted } from "@/lib/mode";
 import { shareUrl } from "@/lib/share";
+import { LibraryControl } from "./library-control";
 import { ShareControl } from "./share-control";
+
+export const dynamic = "force-dynamic";
 
 export default async function ResultsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+
+  // Hosted: the library's copy, read-only.
+  if (isHosted()) {
+    const snap = await getLibraryRun(id);
+    if (!snap) notFound();
+    return (
+      <Page wide>
+        <ResultsView meta={snap.meta} result={snap.result} fileUrl={(_rel, i) => `/library/${id}/file/${i}`} />
+      </Page>
+    );
+  }
+
   const run = await getRun(id);
   if (!run) notFound();
   if (run.status.status !== "done" || !run.result) redirect(`/runs/${id}/processing`);
+  let state = await libraryState(id);
+  if (state === "pending") {
+    // Finished but not up yet: publish now, so the button below tells the truth.
+    await syncLibrary();
+    state = await libraryState(id);
+  }
 
   return (
     <Page wide>
@@ -29,6 +52,7 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
           </>
         }
       />
+      <LibraryControl id={id} initial={state === "published"} />
     </Page>
   );
 }

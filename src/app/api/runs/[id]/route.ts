@@ -2,11 +2,13 @@ import { rm } from "node:fs/promises";
 import path from "node:path";
 import { NextResponse } from "next/server";
 import { getRun, runDir, startPipeline } from "@/lib/runs";
+import { syncLibrary } from "@/lib/library";
 
 /** What the processing page polls. */
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const run = await getRun((await params).id);
   if (!run) return NextResponse.json({ error: "No such run" }, { status: 404 });
+  if (run.status.status === "done") void syncLibrary(); // straight into the hosted library
   return NextResponse.json(run.status, { headers: { "cache-control": "no-store" } });
 }
 
