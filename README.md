@@ -53,6 +53,21 @@ new markings together, so dates accumulate on the stamp and a later rehearsal
 supersedes an earlier note on the same topic instead of drawing over it. A PDF
 stamped by something else gets its stamp dates read, whited out and merged.
 
+## The hosted library
+
+`https://golden-gate-harmonia.vercel.app` is the members' library: sign in
+with `LAB_PASSWORD` (set on the Vercel project too) and see Past rehearsals
+and each rehearsal's results, read-only. Uploading, processing and sharing
+exist only on this Mac; on Vercel those routes are 404.
+
+Every finished rehearsal goes up automatically: copied to the private blob
+store under `library/<run id>/` as soon as the processing page sees it finish,
+or the next time Past rehearsals or its results page loads. Each run folder
+records its state in `library.json`. **Remove from library** at the foot of a
+results page takes it down and marks it so the sync never puts it back; **Add
+to library** reverses that. `library/index.json` is always rebuilt from those
+records.
+
 ## Sharing a rehearsal
 
 **Share** on a results page copies that rehearsal's results and annotated PDFs
