@@ -5,7 +5,6 @@ import { btn, card, eyebrow } from "@/components/ui";
 import { listRuns } from "@/lib/runs";
 import { getLibraryIndex, syncLibrary } from "@/lib/library";
 import { isHosted } from "@/lib/mode";
-import { fmtDate } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -58,6 +57,24 @@ async function rows(): Promise<Row[]> {
   });
 }
 
+/** Consecutive rows grouped by "YYYY-MM"; the rows are already in date order. */
+function byMonth(list: Row[]) {
+  const groups: { month: string; rows: Row[] }[] = [];
+  for (const r of list) {
+    const month = r.date.slice(0, 7);
+    if (groups.at(-1)?.month === month) groups.at(-1)!.rows.push(r);
+    else groups.push({ month, rows: [r] });
+  }
+  return groups;
+}
+
+const monthLabel = (ym: string) =>
+  new Date(`${ym}-15T12:00:00Z`).toLocaleDateString("en-US", { timeZone: "UTC", month: "long", year: "numeric" });
+
+/** The month header carries the month and year, so a row needs only the day. */
+const dayLabel = (iso: string) =>
+  new Date(`${iso}T12:00:00Z`).toLocaleDateString("en-US", { timeZone: "UTC", weekday: "long", month: "long", day: "numeric" });
+
 export default async function HistoryPage() {
   const hosted = isHosted();
   const list = await rows();
@@ -75,30 +92,42 @@ export default async function HistoryPage() {
           )}
         </div>
       ) : (
-        <ul className={`${card} divide-y divide-border-subtle`}>
-          {list.map((r) => (
-            <li key={r.id}>
-              <Link href={r.href} className="flex items-center gap-4 px-5 py-4 text-ink no-underline hover:bg-grey-50 hover:text-ink">
-                <div className="min-w-0 flex-1">
-                  <p className="font-semibold">{fmtDate(r.date)}</p>
-                  <p className="truncate text-sm text-grey-500">{r.line}</p>
-                </div>
-                {r.badge ? (
-                  <span
-                    className={
-                      r.badge.tone === "failed"
-                        ? "rounded-pill bg-blush px-2.5 py-1 text-[13px] font-semibold text-red-700"
-                        : "rounded-pill bg-amber-100 px-2.5 py-1 text-[13px] font-semibold text-grey-900"
-                    }
-                  >
-                    {r.badge.text}
-                  </span>
-                ) : null}
-                <ChevronRight size={18} className="shrink-0 text-grey-500" aria-hidden />
-              </Link>
-            </li>
+        <div className="space-y-9">
+          {byMonth(list).map(({ month, rows: monthRows }) => (
+            <section key={month} aria-labelledby={`m-${month}`}>
+              <div className="mb-3 flex items-baseline justify-between gap-3">
+                <h2 id={`m-${month}`} className="font-display text-xl uppercase text-ink">
+                  {monthLabel(month)}
+                </h2>
+                <span className="text-sm text-grey-500">{plural(monthRows.length, "rehearsal")}</span>
+              </div>
+              <ul className={`${card} divide-y divide-border-subtle`}>
+                {monthRows.map((r) => (
+                  <li key={r.id}>
+                    <Link href={r.href} className="flex items-center gap-4 px-5 py-4 text-ink no-underline hover:bg-grey-50 hover:text-ink">
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold">{dayLabel(r.date)}</p>
+                        <p className="truncate text-sm text-grey-500">{r.line}</p>
+                      </div>
+                      {r.badge ? (
+                        <span
+                          className={
+                            r.badge.tone === "failed"
+                              ? "rounded-pill bg-blush px-2.5 py-1 text-[13px] font-semibold text-red-700"
+                              : "rounded-pill bg-amber-100 px-2.5 py-1 text-[13px] font-semibold text-grey-900"
+                          }
+                        >
+                          {r.badge.text}
+                        </span>
+                      ) : null}
+                      <ChevronRight size={18} className="shrink-0 text-grey-500" aria-hidden />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
           ))}
-        </ul>
+        </div>
       )}
     </Page>
   );
