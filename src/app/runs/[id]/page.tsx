@@ -8,6 +8,8 @@ import { getRun } from "@/lib/runs";
 import { getLibraryRun, libraryState, syncLibrary } from "@/lib/library";
 import { isHosted } from "@/lib/mode";
 import { shareUrl } from "@/lib/share";
+import { todayPacific } from "@/lib/format";
+import { EditRehearsal } from "./edit-rehearsal";
 import { LibraryControl } from "./library-control";
 import { ShareControl } from "./share-control";
 
@@ -43,6 +45,7 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
         meta={run.meta}
         result={run.result}
         fileUrl={(rel) => `/api/files/${id}/${rel.split("/").map(encodeURIComponent).join("/")}`}
+        rehearsalAction={<EditRehearsal id={id} date={run.meta.date} description={run.meta.description} today={todayPacific()} />}
         actions={
           <>
             <ShareControl id={id} initial={run.share ? shareUrl(run.share.token) : null} />

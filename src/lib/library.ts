@@ -110,3 +110,8 @@ export async function getLibraryPdf(id: string, index: number) {
   if (!RUN_ID.test(id) || !Number.isInteger(index) || index < 0) return null;
   return readPdf(`library/${id}/${index}.pdf`);
 }
+
+/** Re-upload a library rehearsal after an edit, and rebuild the index (its date may have moved). */
+export async function refreshLibrary(id: string) {
+  if ((await libraryState(id)) === "published") await publishToLibrary(id);
+}

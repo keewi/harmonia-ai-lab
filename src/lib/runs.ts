@@ -137,7 +137,7 @@ export async function createRun(input: Omit<RunMeta, "id" | "created_at" | "scor
   return id;
 }
 
-function pythonBin() {
+export function pythonBin() {
   if (process.env.LAB_PYTHON) return process.env.LAB_PYTHON;
   const local = path.join(/* turbopackIgnore: true */ process.cwd(), ".venv", "bin", "python");
   return existsSync(local) ? local : "python3";
@@ -154,4 +154,34 @@ export function startPipeline(id: string) {
     stdio: ["ignore", log, log],
   });
   child.unref();
+}
+
+/**
+ * Change a finished rehearsal's date and/or description. A new date re-renders
+ * the annotated PDFs (pipeline/redate.py), because the date is drawn on them
+ * and stored with every note inside them; the description is only run.json.
+ * The run's id keeps its original date, which nothing displays.
+ */
+export async function editRun(id: string, change: { date?: string; description?: string }) {
+  const run = await getRun(id);
+  if (!run) throw new Error("No such rehearsal.");
+  if (run.status.status !== "done") throw new Error("A rehearsal can only be edited once it has finished processing.");
+  const dir = runDir(id);
+
+  if (change.date && change.date !== run.meta.date) {
+    const { execFile } = await import("node:child_process");
+    await new Promise<void>((resolve, reject) => {
+      execFile(
+        pythonBin(),
+        ["-W", "ignore", path.join(/* turbopackIgnore: true */ process.cwd(), "pipeline", "redate.py"), dir, change.date!],
+        { timeout: 120_000, env: process.env },
+        (err, _stdout, stderr) => (err ? reject(new Error(stderr.trim().split("\n").pop() || err.message)) : resolve()),
+      );
+    });
+  }
+  if (change.description !== undefined) {
+    const meta = JSON.parse(await readFile(path.join(dir, "run.json"), "utf8")) as RunMeta;
+    meta.description = change.description;
+    await writeFile(path.join(dir, "run.json"), JSON.stringify(meta, null, 2));
+  }
 }

@@ -58,3 +58,9 @@ export async function getSharedPdf(token: string, index: number) {
   if (!TOKEN.test(token) || !Number.isInteger(index) || index < 0) return null;
   return readPdf(`shares/${token}/${index}.pdf`);
 }
+
+/** Re-upload a shared rehearsal after an edit, under the same token so the link keeps working. */
+export async function refreshShare(id: string) {
+  const existing = await readShare(id);
+  if (existing) await uploadSnapshot(id, `shares/${existing.token}/`, "share.json");
+}

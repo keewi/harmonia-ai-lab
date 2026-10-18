@@ -21,19 +21,23 @@ const PART_DOT: Record<string, string> = { tenor: "bg-gold-400", lead: "bg-brand
 
 /**
  * One rehearsal's results. The lab's own page and the public share page both
- * render this, so a shared link shows exactly what we see, minus `actions`.
+ * render this, so a shared link shows exactly what we see, minus `actions`
+ * and `rehearsalAction` (the lab's Edit button).
  */
 export function ResultsView({
   meta,
   result,
   fileUrl,
   actions,
+  rehearsalAction,
 }: {
   meta: Pick<RunMeta, "date" | "video_url" | "description">;
   result: RunResult;
   /** Where the i-th annotated score is served from. */
   fileUrl: (rel: string, index: number) => string;
   actions?: ReactNode;
+  /** Top-right of the Rehearsal card. Only the lab passes one. */
+  rehearsalAction?: ReactNode;
 }) {
   const totalNotes = result.songs.reduce((n, s) => n + s.notes, 0);
   return (
@@ -87,7 +91,10 @@ export function ResultsView({
 
         <aside className="min-w-0 space-y-6">
           <section className={`${card} p-5`}>
-            <h2 className={eyebrow}>Rehearsal</h2>
+            <div className="flex items-center justify-between gap-3">
+              <h2 className={eyebrow}>Rehearsal</h2>
+              {rehearsalAction}
+            </div>
             <dl className="mt-3 space-y-3 text-[15px]">
               <div>
                 <dt className="text-sm text-grey-500">Date</dt>

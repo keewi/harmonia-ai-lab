@@ -13,11 +13,15 @@ type Row = { id: string; href: string; date: string; line: string; badge?: { tex
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
-/** Locally: every run on this Mac. Hosted: the library index this Mac publishes. */
+/**
+ * Locally: every run on this Mac. Hosted: the library index this Mac publishes.
+ * Both oldest first by rehearsal date (not upload date), so the list reads in
+ * the order the season happened.
+ */
 async function rows(): Promise<Row[]> {
   if (isHosted()) {
     return (await getLibraryIndex())
-      .sort((a, b) => b.date.localeCompare(a.date))
+      .sort((a, b) => a.date.localeCompare(b.date))
       .map((e) => ({
         id: e.id,
         href: `/runs/${e.id}`,
@@ -28,7 +32,10 @@ async function rows(): Promise<Row[]> {
   // Catch the library up with anything finished since it last synced. It runs in
   // the background so this page never waits on an upload.
   void syncLibrary();
-  return (await listRuns()).map(({ meta, status, result }) => {
+  const runs = (await listRuns()).sort(
+    (a, b) => a.meta.date.localeCompare(b.meta.date) || a.meta.created_at.localeCompare(b.meta.created_at),
+  );
+  return runs.map(({ meta, status, result }) => {
     const songs = result?.songs.length ?? 0;
     const notes = result?.songs.reduce((n, s) => n + s.notes, 0) ?? 0;
     return {
